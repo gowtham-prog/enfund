@@ -3,7 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
-    command: sh -c "python manage.py makemigrations && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 enfund.asgi:application"
+    command: sh -c "sleep 10 && python manage.py makemigrations && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 enfund.asgi:application"
     volumes:
       - .:/app
     ports:
@@ -15,13 +15,21 @@ services:
       - REDIS_URL=redis://redis:6379/0
     env_file:
       - .env
+    networks:
+      - app-network
 
   redis:
     image: redis:latest
     ports:
       - "6379:6379"
-    # healthcheck:
-    #   test: ["CMD", "redis-cli", "ping"]
-    #   interval: 1s
-    #   timeout: 3s
-    #   retries: 30
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
