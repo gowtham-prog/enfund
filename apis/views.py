@@ -8,13 +8,21 @@ import urllib.parse
 import requests
 from django.contrib.auth import login, logout
 from apis.models import CustomUser
+from django.views.decorators.csrf import csrf_exempt
 
+
+
+def get_access_token_from_session_or_request(request):
+    access_token = getattr(request.user, "access_token", None)
+    if not access_token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            access_token = auth_header.split(" ")[1]
+    return access_token
 
 def google_auth_start(request):
-    # Google OAuth 2.0 authorization endpoint
     auth_url = "https://accounts.google.com/o/oauth2/v2/auth"
     
-    # Parameters for the authorization request
     params = {
         "client_id": settings.CLIENT_ID,
         "redirect_uri": settings.REDIRECT_URI,
@@ -96,7 +104,6 @@ def logout_view(request):
     return JsonResponse({"error": "User is not logged in"}, status=400)
 
 
-from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def upload_to_drive(request):
@@ -105,11 +112,7 @@ def upload_to_drive(request):
         if not file:
             return JsonResponse({"error": "No file provided"}, status=400)
         
-        access_token = getattr(request.user, "access_token", None)
-        if not access_token:
-            auth_header = request.headers.get("Authorization")
-            if auth_header and auth_header.startswith("Bearer "):
-                access_token = auth_header.split(" ")[1]
+        access_token = get_access_token_from_session_or_request(request)
 
         if not access_token:
             return JsonResponse({"error": "Access token is missing"}, status=403)
@@ -129,15 +132,13 @@ def upload_to_drive(request):
             return JsonResponse({"message": "File uploaded successfully", "file_id": response.json().get("id")})
         else:
             return JsonResponse({"error": "Failed to upload file"}, status=response.status_code)
-        
+
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405) 
 
 def list_drive_files(request):
     
-    access_token = getattr(request.user, "access_token", None)
-    if not access_token:
-        auth_header = request.headers.get("Authorization")
-        if auth_header and auth_header.startswith("Bearer "):
-            access_token = auth_header.split(" ")[1]
+    access_token = get_access_token_from_session_or_request(request)
 
     if not access_token:
         return JsonResponse({"error": "Access token is missing"}, status=403)
@@ -158,11 +159,7 @@ def list_drive_files(request):
 
 def download_from_drive(request, file_id):
     
-    access_token = getattr(request.user, "access_token", None)
-    if not access_token:
-        auth_header = request.headers.get("Authorization")
-        if auth_header and auth_header.startswith("Bearer "):
-            access_token = auth_header.split(" ")[1]
+    access_token = get_access_token_from_session_or_request(request)
 
     if not access_token:
         return JsonResponse({"error": "Access token is missing"}, status=403)
@@ -189,3 +186,4 @@ def download_from_drive(request, file_id):
         return response
     else:
         return JsonResponse({"error": "Failed to download file"}, status=response.status_code)
+    
