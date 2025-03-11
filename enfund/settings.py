@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from urllib.parse import urlparse
 
 load_dotenv()
 
@@ -83,12 +84,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'enfund.wsgi.application'
 
+redis_url = os.getenv('REDIS_URL', 'redis://redis-latest-cpiy.onrender.com:6379/0')
+parsed_redis_url = urlparse(redis_url)
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            # "hosts": [('127.0.0.1', 6379)],
-            "hosts": [('redis', 6379)],
+            "hosts": [(parsed_redis_url.hostname, parsed_redis_url.port)],
         },
     },
 }
