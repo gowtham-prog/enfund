@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-vnku$#$rup*_*dqa8s7a)60!)=0lqja3-b5u4^nm+nhzivh_j9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['enfund.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['enfund.onrender.com', 'localhost', '127.0.0.1','enfund-production.up.railway.app']
 
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
