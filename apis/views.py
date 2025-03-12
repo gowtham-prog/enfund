@@ -87,7 +87,7 @@ def google_auth_callback(request):
     user.save()
     login(request, user)
 
-    return JsonResponse({"email": email, "name": name, "new_user": created})
+    return JsonResponse({"email": email, "name": name, "new_user": created, "access_token": access_token})
 
 
 def logout_view(request):

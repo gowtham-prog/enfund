@@ -10,33 +10,80 @@
     <input id="chat-message-submit" type="button" value="Send">
 
     <script>
+        // Logging function for better debugging
+        function log(message, isError = false) {
+            const logElement = document.createElement('p');
+            logElement.textContent = message;
+            if (isError) {
+                logElement.style.color = 'red';
+            }
+            document.querySelector('#chat-log').appendChild(logElement);
+            console.log(message); // Log to console for debugging
+        }
+
+        // Initialize WebSocket connection
         const chatSocket = new WebSocket(
             'ws://' + window.location.host + '/ws/chat/'
         );
 
+        // Handle WebSocket connection open
+        chatSocket.onopen = function(e) {
+            log('WebSocket connection established.');
+        };
+
+        // Handle incoming messages
         chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').innerHTML += ('<p>' + data.message + '</p>');
+            try {
+                const data = JSON.parse(e.data);
+                log('Received: ' + data.message);
+            } catch (error) {
+                log('Error parsing message: ' + error.message, true);
+            }
         };
 
+        // Handle WebSocket errors
+        chatSocket.onerror = function(e) {
+            log('WebSocket error occurred.', true);
+        };
+
+        // Handle WebSocket connection close
         chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
+            if (e.wasClean) {
+                log('WebSocket connection closed cleanly.');
+            } else {
+                log('WebSocket connection closed unexpectedly.', true);
+            }
+            log('Code: ' + e.code + ', Reason: ' + e.reason);
         };
 
+        // Focus on the input field when the page loads
         document.querySelector('#chat-message-input').focus();
+
+        // Send message on Enter key press
         document.querySelector('#chat-message-input').onkeyup = function(e) {
             if (e.keyCode === 13) {  // Enter key
                 document.querySelector('#chat-message-submit').click();
             }
         };
 
+        // Send message on button click
         document.querySelector('#chat-message-submit').onclick = function(e) {
             const messageInputDom = document.querySelector('#chat-message-input');
-            const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-            messageInputDom.value = '';
+            const message = messageInputDom.value.trim();
+
+            if (message) {
+                try {
+                    chatSocket.send(JSON.stringify({
+                        'message': message
+                    }));
+                    log('Sent: ' + message);
+                    messageInputDom.value = '';
+                } catch (error) {
+                    log('Error sending message: ' + error.message, true);
+                }
+            } else {
+                log('Message cannot be empty.', true);
+            }
         };
     </script>
 </body>
