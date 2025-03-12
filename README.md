@@ -5,6 +5,10 @@ A real-time chat application built with Django Channels and WebSocket support.
 ## Deployed Application
 - Production URL: https://enfund-production.up.railway.app
 
+## Video Explanation
+
+- Video Explanation : https://www.loom.com/share/2285bf32218a4ea6b3271715f67f3c4f?sid=505d6f46-4c69-40e0-a2d9-fdcf4d0e4940
+
 ## Prerequisites
 - Python 3.10 or higher
 - Redis server
