@@ -1,0 +1,105 @@
+{
+	"info": {
+		"_postman_id": "da4b0d31-4fd2-4443-a23c-f6c3d982ff95",
+		"name": "Enfund",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "32604647"
+	},
+	"item": [
+		{
+			"name": "File Upload to Drive",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/gowth/Downloads/backend-assignment.pdf"
+						}
+					]
+				},
+				"url": "{{server_url}}/drive/upload/"
+			},
+			"response": []
+		},
+		{
+			"name": "File Download from Drive",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{server_url}}/drive/download/1QAAUDRzbXR4Yo5b8_WznWKqp88UgID59/"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Drive Files",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{server_url}}/drive/files/"
+			},
+			"response": []
+		},
+		{
+			"name": "Google OAuth Login",
+			"protocolProfileBehavior": {
+				"followRedirects": false
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{server_url}}/login"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": {
+			"token": "{{access_token}}"
+		}
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "server_url",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

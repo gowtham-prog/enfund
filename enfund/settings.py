@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-vnku$#$rup*_*dqa8s7a)60!)=0lqja3-b5u4^nm+nhzivh_j9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['enfund.onrender.com', 'localhost', '127.0.0.1','enfund-production.up.railway.app']
 
