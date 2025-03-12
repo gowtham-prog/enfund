@@ -84,15 +84,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'enfund.wsgi.application'
 
-redis_url = os.getenv('REDIS_URL', 'redis://redis-latest-cpiy.onrender.com:6379/0')
-parsed_redis_url = urlparse(redis_url)
-
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [(parsed_redis_url.hostname, parsed_redis_url.port)],
-        },
+            "hosts": [os.environ.get("REDIS_URL", "redis://localhost:6379")], },
     },
 }
 
