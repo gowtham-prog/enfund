@@ -87,7 +87,72 @@ def google_auth_callback(request):
     user.save()
     login(request, user)
 
-    return JsonResponse({"email": email, "name": name, "new_user": created, "access_token": access_token})
+
+    return JsonResponse({"email": email, "name": name, "new_user": created, "access_token": access_token, "refresh_token" : refresh_token})
+
+
+def google_auth_refresh(request):
+    if "error" in request.GET:
+        return JsonResponse({"error": "Error refreshing token"}, status=400)
+    
+    access_token = get_access_token_from_session_or_request(request)
+
+    if not access_token:
+        return JsonResponse({"error": "Access token is missing"})
+    
+    user = CustomUser.objects.filter(access_token=access_token).first()
+    
+    if not user:
+        return JsonResponse({"error": "User not found"})
+    
+    token_url = "https://oauth2.googleapis.com/token"
+    data = {
+        "refresh_token": user.refresh_token,
+        "client_id": settings.CLIENT_ID,
+        "client_secret": settings.CLIENT_SECRET,
+        "redirect_uri": settings.REDIRECT_URI,
+        "grant_type": "refresh_token ",
+    }
+    
+    response = requests.post(token_url, data=data)
+    token_data = response.json()
+    
+
+    if "error" in token_data:
+        return JsonResponse({"error" :"Error refreshing token"})
+    
+    access_token = token_data.get("access_token")
+    id_token = token_data.get("id_token")
+    refresh_token = token_data.get("refresh_token")
+    
+
+    return JsonResponse({ "access_token" : access_token})
+
+    # user_info_url = "https://www.googleapis.com/oauth2/v3/userinfo"
+    # headers = {"Authorization": f"Bearer {access_token}"}
+    # user_info_response = requests.get(user_info_url, headers=headers)
+    # user_info = user_info_response.json()
+    
+    # if "error" in user_info:
+    #     return redirect("/error/")  # Handle errors
+    
+    # email = user_info.get("email")
+    # name = user_info.get("name")
+
+    # user, created = CustomUser.objects.get_or_create(email=email, defaults={"username": email, "first_name": name})
+    
+    # user.access_token = access_token
+    # if refresh_token:
+    #     user.refresh_token = refresh_token
+
+    # if created:
+    #     user.set_unusable_password()
+
+    # user.save()
+    # login(request, user)
+
+
+    # return JsonResponse({"email": email, "name": name, "new_user": created, "access_token": access_token, "refresh_token" : refresh_token})
 
 
 def logout_view(request):
